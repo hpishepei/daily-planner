@@ -78,13 +78,13 @@ function NoteRow({
     >
       {modifying && (
         <span
-          className="text-gray-300 cursor-grab active:cursor-grabbing text-lg select-none shrink-0 mt-0.5"
+          className="text-gray-300 cursor-grab active:cursor-grabbing text-lg select-none shrink-0 self-center"
           title="Drag to reorder"
         >
           ⠿
         </span>
       )}
-      <span className="shrink-0 text-gray-400 w-5 mt-0.5">{index + 1}.</span>
+      <span className="shrink-0 text-gray-400 w-5 self-center">{index + 1}.</span>
 
       {editing ? (
         <textarea
@@ -110,7 +110,7 @@ function NoteRow({
       {modifying && (
         <button
           onClick={onDelete}
-          className="text-gray-400 hover:text-red-500 transition-colors shrink-0 text-xl leading-none px-1"
+          className="text-gray-400 hover:text-red-500 transition-colors shrink-0 text-xl leading-none px-1 self-center"
           title="Delete"
         >
           ×
