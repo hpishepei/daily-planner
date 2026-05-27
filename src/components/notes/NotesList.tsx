@@ -67,7 +67,7 @@ function NoteRow({
 
   return (
     <li
-      className={`flex items-start gap-2 py-2 px-2 rounded-lg bg-gray-50 border border-gray-100 transition-colors ${
+      className={`flex items-start gap-2 py-2 px-2 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 transition-colors ${
         isDragTarget && modifying ? 'border-t-2 border-blue-400' : ''
       }`}
       draggable={modifying && !editing}
@@ -90,7 +90,7 @@ function NoteRow({
         <textarea
           ref={inputRef}
           rows={1}
-          className="flex-1 min-w-0 text-sm text-gray-800 bg-transparent border-b-2 border-green-400 focus:outline-none py-0.5 resize-none overflow-hidden leading-relaxed"
+          className="flex-1 min-w-0 text-sm text-gray-800 dark:text-gray-100 bg-transparent border-b-2 border-green-400 focus:outline-none py-0.5 resize-none overflow-hidden leading-relaxed"
           value={draft}
           onChange={handleInput}
           onKeyDown={handleKeyDown}
@@ -98,7 +98,7 @@ function NoteRow({
         />
       ) : (
         <span
-          className={`flex-1 text-sm text-gray-800 leading-relaxed break-words min-w-0 ${
+          className={`flex-1 text-sm text-gray-800 dark:text-gray-100 leading-relaxed break-words min-w-0 ${
             modifying ? 'cursor-text hover:text-blue-600' : ''
           }`}
           onClick={startEditing}
@@ -180,7 +180,7 @@ export function NotesList({ title = "Today's Notes", notes, onAdd, onDelete, onU
 
   return (
     <section
-      className={`bg-white rounded-xl border shadow-sm p-4 sm:p-6 transition-colors ${sectionDragOver ? 'border-blue-400 border-2' : 'border-gray-200'}`}
+      className={`bg-white dark:bg-gray-800 rounded-xl border shadow-sm p-4 sm:p-6 transition-colors ${sectionDragOver ? 'border-blue-400 border-2' : 'border-gray-200 dark:border-gray-700'}`}
       draggable={sectionDraggable}
       onDragStart={onSectionDragStart}
       onDragOver={onSectionDragOver}
@@ -199,7 +199,7 @@ export function NotesList({ title = "Today's Notes", notes, onAdd, onDelete, onU
         {editingTitle && onTitleChange ? (
           <input
             ref={titleInputRef}
-            className="text-xl font-semibold text-gray-800 bg-transparent border-b-2 border-blue-400 focus:outline-none flex-1"
+            className="text-xl font-semibold text-gray-800 dark:text-gray-100 bg-transparent border-b-2 border-blue-400 focus:outline-none flex-1"
             value={titleDraft}
             onChange={(e) => setTitleDraft(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') saveTitle(); if (e.key === 'Escape') setEditingTitle(false); }}
@@ -207,7 +207,7 @@ export function NotesList({ title = "Today's Notes", notes, onAdd, onDelete, onU
           />
         ) : (
           <h2
-            className={`text-xl font-semibold text-gray-800 flex-1 ${onTitleChange ? 'cursor-text hover:text-blue-600' : ''}`}
+            className={`text-xl font-semibold text-gray-800 dark:text-gray-100 flex-1 ${onTitleChange ? 'cursor-text hover:text-blue-600' : ''}`}
             onClick={() => onTitleChange && setEditingTitle(true)}
             title={onTitleChange ? 'Click to rename' : undefined}
           >
@@ -226,13 +226,13 @@ export function NotesList({ title = "Today's Notes", notes, onAdd, onDelete, onU
       </div>
 
       {modifying && (
-        <div className="mb-3 px-3 py-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800 italic">
+        <div className="mb-3 px-3 py-2 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded text-sm text-yellow-800 dark:text-yellow-300 italic">
           Edit mode — click any item to edit, drag to reorder, × to delete
         </div>
       )}
 
       <textarea
-        className="w-full border border-gray-300 rounded px-3 py-2 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-green-400 resize-none h-24"
+        className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-green-400 resize-none h-24 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
         placeholder="Write a note... (Enter to save, Shift+Enter for newline)"
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
@@ -251,7 +251,7 @@ export function NotesList({ title = "Today's Notes", notes, onAdd, onDelete, onU
           className={`flex-1 sm:flex-none px-4 py-2 text-sm rounded font-medium transition-colors ${
             modifying
               ? 'bg-amber-500 text-white hover:bg-amber-600'
-              : 'border border-gray-300 text-gray-600 hover:bg-gray-50'
+              : 'border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
           }`}
         >
           {modifying ? 'Done' : 'Modify'}

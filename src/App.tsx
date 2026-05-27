@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNotes } from './hooks/useNotes';
 import { useReminders } from './hooks/useReminders';
 import { useNoteGroups } from './hooks/useNoteGroups';
@@ -19,6 +19,12 @@ export default function App() {
   const importRef = useRef<HTMLInputElement>(null);
   const [dragGroupIndex, setDragGroupIndex] = useState<number | null>(null);
   const [dragGroupOverIndex, setDragGroupOverIndex] = useState<number | null>(null);
+  const [dark, setDark] = useState(() => localStorage.getItem('theme') === 'dark');
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', dark);
+    localStorage.setItem('theme', dark ? 'dark' : 'light');
+  }, [dark]);
 
   async function handleExport() {
     const data = JSON.stringify({ notes, reminders, groups }, null, 2);
@@ -82,20 +88,27 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-100">
+    <div className="min-h-screen bg-stone-100 dark:bg-gray-900 transition-colors">
       <div className="max-w-3xl mx-auto px-4 py-6 sm:py-8">
         <div className="flex flex-wrap items-center justify-between gap-y-3 mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">My Daily Planner</h1>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">My Daily Planner</h1>
           <div className="flex gap-2">
             <button
+              onClick={() => setDark((v) => !v)}
+              className="px-3 py-1.5 border border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              title="Toggle theme"
+            >
+              {dark ? '☀ Light' : '☾ Dark'}
+            </button>
+            <button
               onClick={handleExport}
-              className="px-4 py-1.5 border border-gray-400 text-gray-700 text-sm rounded hover:bg-gray-100 transition-colors"
+              className="px-4 py-1.5 border border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
               Export
             </button>
             <button
               onClick={handleImportClick}
-              className="px-4 py-1.5 border border-gray-400 text-gray-700 text-sm rounded hover:bg-gray-100 transition-colors"
+              className="px-4 py-1.5 border border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
               Import
             </button>
@@ -145,7 +158,7 @@ export default function App() {
 
           <button
             onClick={addGroup}
-            className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-sm text-gray-500 hover:border-blue-400 hover:text-blue-500 transition-colors font-medium"
+            className="w-full py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl text-sm text-gray-500 dark:text-gray-400 hover:border-blue-400 hover:text-blue-500 transition-colors font-medium"
           >
             + Add Custom Notes
           </button>

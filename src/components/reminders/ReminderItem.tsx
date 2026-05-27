@@ -15,9 +15,9 @@ interface Props {
 }
 
 const badgeColors: Record<string, string> = {
-  Morning: 'bg-yellow-100 text-yellow-800',
-  Afternoon: 'bg-orange-100 text-orange-800',
-  Evening: 'bg-purple-100 text-purple-700',
+  Morning: 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300',
+  Afternoon: 'bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300',
+  Evening: 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300',
 };
 
 function formatDate(dateStr: string): string {
@@ -68,7 +68,7 @@ export function ReminderItem({
 
   return (
     <div
-      className={`flex items-start gap-2 py-3 px-2 rounded-lg bg-gray-50 border border-gray-100 transition-colors ${
+      className={`flex items-start gap-2 py-3 px-2 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 transition-colors ${
         isDragTarget && modifying ? 'border-t-2 border-t-blue-400' : ''
       }`}
       draggable={modifying && !editing}
@@ -88,7 +88,7 @@ export function ReminderItem({
 
       <div className="flex flex-col xs:flex-row sm:flex-row sm:items-center gap-1 sm:gap-3 flex-1 min-w-0">
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-xs text-gray-500 whitespace-nowrap">{formatDate(reminder.date)}</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">{formatDate(reminder.date)}</span>
           <span className={`text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap ${badgeColors[reminder.timeOfDay]}`}>
             {reminder.timeOfDay.toLowerCase()}
           </span>
@@ -97,7 +97,7 @@ export function ReminderItem({
         {editing ? (
           <input
             ref={inputRef}
-            className="flex-1 min-w-0 text-sm text-gray-800 bg-transparent border-b-2 border-blue-400 focus:outline-none py-0.5"
+            className="flex-1 min-w-0 text-sm text-gray-800 dark:text-gray-100 bg-transparent border-b-2 border-blue-400 focus:outline-none py-0.5"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -105,7 +105,7 @@ export function ReminderItem({
           />
         ) : (
           <span
-            className={`text-sm text-gray-800 break-words min-w-0 ${
+            className={`text-sm text-gray-800 dark:text-gray-100 break-words min-w-0 ${
               modifying ? 'cursor-text hover:text-blue-600' : ''
             }`}
             onClick={startEditing}

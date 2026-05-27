@@ -37,11 +37,11 @@ export function RemindersList({ reminders, onAdd, onDelete, onUpdate, onReorder 
   function handlePageSize(size: number) { setPageSize(size); setPage(0); }
 
   return (
-    <section className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-6">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Reminders</h2>
+    <section className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-4 sm:p-6">
+      <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Reminders</h2>
 
       {modifying && (
-        <div className="mb-3 px-3 py-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800 italic">
+        <div className="mb-3 px-3 py-2 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded text-sm text-yellow-800 dark:text-yellow-300 italic">
           Edit mode — click any item to edit, drag to reorder, × to delete
         </div>
       )}
@@ -54,7 +54,7 @@ export function RemindersList({ reminders, onAdd, onDelete, onUpdate, onReorder 
 
       <div className="mt-4">
         {reminders.length === 0 ? (
-          <p className="text-gray-400 text-sm py-4">No reminders yet.</p>
+          <p className="text-gray-400 dark:text-gray-500 text-sm py-4">No reminders yet.</p>
         ) : (
           <>
             <div className="space-y-1.5">
@@ -76,32 +76,32 @@ export function RemindersList({ reminders, onAdd, onDelete, onUpdate, onReorder 
             </div>
 
             {/* Pagination — stacks vertically on mobile */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4 pt-3 border-t border-gray-100">
-              <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                 <span className="shrink-0">Rows per page:</span>
                 {PAGE_SIZES.map((size) => (
                   <button
                     key={size}
                     onClick={() => handlePageSize(size)}
                     className={`w-8 h-8 rounded text-sm font-medium transition-colors ${
-                      pageSize === size ? 'bg-blue-600 text-white' : 'hover:bg-gray-100 text-gray-600'
+                      pageSize === size ? 'bg-blue-600 text-white' : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
                     }`}
                   >
                     {size}
                   </button>
                 ))}
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
+              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                 <span>{reminders.length === 0 ? '0' : `${start + 1}–${end}`} of {reminders.length}</span>
                 <button
                   onClick={() => setPage((p) => Math.max(0, p - 1))}
                   disabled={safePage === 0}
-                  className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 disabled:opacity-30 text-lg"
+                  className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 text-lg"
                 >‹</button>
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                   disabled={safePage >= totalPages - 1}
-                  className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 disabled:opacity-30 text-lg"
+                  className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 text-lg"
                 >›</button>
               </div>
             </div>
