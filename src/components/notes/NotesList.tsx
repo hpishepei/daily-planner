@@ -20,10 +20,16 @@ function NoteRow({
 }: NoteRowProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(note.text);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    if (editing) inputRef.current?.select();
+    if (editing) {
+      const el = inputRef.current;
+      if (!el) return;
+      el.select();
+      el.style.height = 'auto';
+      el.style.height = el.scrollHeight + 'px';
+    }
   }, [editing]);
 
   useEffect(() => {
@@ -47,16 +53,21 @@ function NoteRow({
     setEditing(false);
   }
 
-  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Enter') { e.preventDefault(); save(); }
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+  }
+
+  function handleInput(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    setDraft(e.target.value);
+    e.target.style.height = 'auto';
+    e.target.style.height = e.target.scrollHeight + 'px';
   }
 
   const isDragTarget = dragOverIndex === index;
 
   return (
     <li
-      className={`flex items-center gap-2 py-2 px-2 rounded-lg bg-gray-50 border border-gray-100 transition-colors ${
+      className={`flex items-start gap-2 py-2 px-2 rounded-lg bg-gray-50 border border-gray-100 transition-colors ${
         isDragTarget && modifying ? 'border-t-2 border-blue-400' : ''
       }`}
       draggable={modifying && !editing}
@@ -67,20 +78,21 @@ function NoteRow({
     >
       {modifying && (
         <span
-          className="text-gray-300 cursor-grab active:cursor-grabbing text-lg select-none shrink-0"
+          className="text-gray-300 cursor-grab active:cursor-grabbing text-lg select-none shrink-0 mt-0.5"
           title="Drag to reorder"
         >
           ⠿
         </span>
       )}
-      <span className="shrink-0 text-gray-400 w-5">{index + 1}.</span>
+      <span className="shrink-0 text-gray-400 w-5 mt-0.5">{index + 1}.</span>
 
       {editing ? (
-        <input
+        <textarea
           ref={inputRef}
-          className="flex-1 min-w-0 text-sm text-gray-800 bg-transparent border-b-2 border-green-400 focus:outline-none py-0.5"
+          rows={1}
+          className="flex-1 min-w-0 text-sm text-gray-800 bg-transparent border-b-2 border-green-400 focus:outline-none py-0.5 resize-none overflow-hidden leading-relaxed"
           value={draft}
-          onChange={(e) => setDraft(e.target.value)}
+          onChange={handleInput}
           onKeyDown={handleKeyDown}
           onBlur={save}
         />
