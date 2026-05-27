@@ -5,13 +5,31 @@ import { NotesList } from './components/notes/NotesList';
 import { RemindersList } from './components/reminders/RemindersList';
 import type { Note, Reminder } from './types';
 
+const FILE_PICKER_OPTS = {
+  suggestedName: 'planner.json',
+  startIn: 'downloads' as const,
+  types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }],
+};
+
 export default function App() {
   const { notes, addNote, deleteNote, updateNote, reorderNotes, replaceNotes } = useNotes();
   const { reminders, addReminder, deleteReminder, updateReminder, reorderReminders, replaceReminders } = useReminders();
   const importRef = useRef<HTMLInputElement>(null);
 
-  function handleExport() {
+  async function handleExport() {
     const data = JSON.stringify({ notes, reminders }, null, 2);
+    if ('showSaveFilePicker' in window) {
+      try {
+        const handle = await (window as any).showSaveFilePicker(FILE_PICKER_OPTS);
+        const writable = await handle.createWritable();
+        await writable.write(data);
+        await writable.close();
+        return;
+      } catch (e: any) {
+        if (e.name === 'AbortError') return;
+      }
+    }
+    // Fallback for browsers without File System Access API
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -21,9 +39,24 @@ export default function App() {
     URL.revokeObjectURL(url);
   }
 
-  function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  async function handleImportClick() {
+    if ('showOpenFilePicker' in window) {
+      try {
+        const [handle] = await (window as any).showOpenFilePicker({
+          startIn: 'downloads' as const,
+          types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }],
+        });
+        const file = await handle.getFile();
+        parseImportFile(file);
+        return;
+      } catch (e: any) {
+        if (e.name === 'AbortError') return;
+      }
+    }
+    importRef.current?.click();
+  }
+
+  function parseImportFile(file: File) {
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {
@@ -35,6 +68,11 @@ export default function App() {
       }
     };
     reader.readAsText(file);
+  }
+
+  function handleImportFallback(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) parseImportFile(file);
     e.target.value = '';
   }
 
@@ -51,12 +89,12 @@ export default function App() {
               Export
             </button>
             <button
-              onClick={() => importRef.current?.click()}
+              onClick={handleImportClick}
               className="px-4 py-1.5 border border-gray-400 text-gray-700 text-sm rounded hover:bg-gray-100 transition-colors"
             >
               Import
             </button>
-            <input ref={importRef} type="file" accept=".json" className="hidden" onChange={handleImport} />
+            <input ref={importRef} type="file" accept=".json" className="hidden" onChange={handleImportFallback} />
           </div>
         </div>
 
