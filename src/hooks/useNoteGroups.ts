@@ -71,9 +71,19 @@ export function useNoteGroups() {
     );
   }
 
+  function reorderGroups(fromIndex: number, toIndex: number): void {
+    setGroups((prev) => {
+      if (fromIndex === toIndex) return prev;
+      const next = [...prev];
+      const [item] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, item);
+      return next;
+    });
+  }
+
   function replaceGroups(incoming: NoteGroup[]): void {
     setGroups(incoming);
   }
 
-  return { groups, addGroup, deleteGroup, renameGroup, addNote, deleteNote, updateNote, reorderNotes, replaceGroups };
+  return { groups, addGroup, deleteGroup, renameGroup, addNote, deleteNote, updateNote, reorderNotes, reorderGroups, replaceGroups };
 }

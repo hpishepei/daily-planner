@@ -129,9 +129,16 @@ interface Props {
   onReorder: (fromIndex: number, toIndex: number) => void;
   onTitleChange?: (title: string) => void;
   onDeleteGroup?: () => void;
+  // section-level drag-and-drop
+  sectionDraggable?: boolean;
+  sectionDragOver?: boolean;
+  onSectionDragStart?: () => void;
+  onSectionDragOver?: (e: React.DragEvent) => void;
+  onSectionDrop?: () => void;
+  onSectionDragEnd?: () => void;
 }
 
-export function NotesList({ title = "Today's Notes", notes, onAdd, onDelete, onUpdate, onReorder, onTitleChange, onDeleteGroup }: Props) {
+export function NotesList({ title = "Today's Notes", notes, onAdd, onDelete, onUpdate, onReorder, onTitleChange, onDeleteGroup, sectionDraggable, sectionDragOver, onSectionDragStart, onSectionDragOver, onSectionDrop, onSectionDragEnd }: Props) {
   const [draft, setDraft] = useState('');
   const [modifying, setModifying] = useState(false);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
@@ -172,8 +179,23 @@ export function NotesList({ title = "Today's Notes", notes, onAdd, onDelete, onU
   function handleDragEnd() { setDragIndex(null); setDragOverIndex(null); }
 
   return (
-    <section className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-6">
+    <section
+      className={`bg-white rounded-xl border shadow-sm p-4 sm:p-6 transition-colors ${sectionDragOver ? 'border-blue-400 border-2' : 'border-gray-200'}`}
+      draggable={sectionDraggable}
+      onDragStart={onSectionDragStart}
+      onDragOver={onSectionDragOver}
+      onDrop={onSectionDrop}
+      onDragEnd={onSectionDragEnd}
+    >
       <div className="flex items-center gap-2 mb-4">
+        {sectionDraggable && (
+          <span
+            className="text-gray-300 cursor-grab active:cursor-grabbing text-lg select-none shrink-0"
+            title="Drag to reorder section"
+          >
+            ⠿
+          </span>
+        )}
         {editingTitle && onTitleChange ? (
           <input
             ref={titleInputRef}

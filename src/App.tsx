@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useNotes } from './hooks/useNotes';
 import { useReminders } from './hooks/useReminders';
 import { useNoteGroups } from './hooks/useNoteGroups';
@@ -15,8 +15,10 @@ const FILE_PICKER_OPTS = {
 export default function App() {
   const { notes, addNote, deleteNote, updateNote, reorderNotes, replaceNotes } = useNotes();
   const { reminders, addReminder, deleteReminder, updateReminder, reorderReminders, replaceReminders } = useReminders();
-  const { groups, addGroup, deleteGroup, renameGroup, addNote: addGroupNote, deleteNote: deleteGroupNote, updateNote: updateGroupNote, reorderNotes: reorderGroupNotes, replaceGroups } = useNoteGroups();
+  const { groups, addGroup, deleteGroup, renameGroup, addNote: addGroupNote, deleteNote: deleteGroupNote, updateNote: updateGroupNote, reorderNotes: reorderGroupNotes, reorderGroups, replaceGroups } = useNoteGroups();
   const importRef = useRef<HTMLInputElement>(null);
+  const [dragGroupIndex, setDragGroupIndex] = useState<number | null>(null);
+  const [dragGroupOverIndex, setDragGroupOverIndex] = useState<number | null>(null);
 
   async function handleExport() {
     const data = JSON.stringify({ notes, reminders, groups }, null, 2);
@@ -117,7 +119,7 @@ export default function App() {
             onReorder={reorderNotes}
           />
 
-          {groups.map((group) => (
+          {groups.map((group, i) => (
             <NotesList
               key={group.id}
               title={group.title}
@@ -128,6 +130,16 @@ export default function App() {
               onReorder={(from, to) => reorderGroupNotes(group.id, from, to)}
               onTitleChange={(t) => renameGroup(group.id, t)}
               onDeleteGroup={() => deleteGroup(group.id)}
+              sectionDraggable
+              sectionDragOver={dragGroupOverIndex === i}
+              onSectionDragStart={() => setDragGroupIndex(i)}
+              onSectionDragOver={(e) => { e.preventDefault(); setDragGroupOverIndex(i); }}
+              onSectionDrop={() => {
+                if (dragGroupIndex !== null) reorderGroups(dragGroupIndex, i);
+                setDragGroupIndex(null);
+                setDragGroupOverIndex(null);
+              }}
+              onSectionDragEnd={() => { setDragGroupIndex(null); setDragGroupOverIndex(null); }}
             />
           ))}
 
