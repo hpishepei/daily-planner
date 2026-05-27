@@ -13,3 +13,10 @@ export interface Note {
   text: string;
   createdAt: number;
 }
+
+export interface NoteGroup {
+  id: string;
+  title: string;
+  notes: Note[];
+  createdAt: number;
+}

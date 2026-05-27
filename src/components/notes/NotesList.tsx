@@ -109,18 +109,33 @@ function NoteRow({
 }
 
 interface Props {
+  title?: string;
   notes: Note[];
   onAdd: (text: string) => void;
   onDelete: (id: string) => void;
   onUpdate: (id: string, text: string) => void;
   onReorder: (fromIndex: number, toIndex: number) => void;
+  onTitleChange?: (title: string) => void;
+  onDeleteGroup?: () => void;
 }
 
-export function NotesList({ notes, onAdd, onDelete, onUpdate, onReorder }: Props) {
+export function NotesList({ title = "Today's Notes", notes, onAdd, onDelete, onUpdate, onReorder, onTitleChange, onDeleteGroup }: Props) {
   const [draft, setDraft] = useState('');
   const [modifying, setModifying] = useState(false);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [titleDraft, setTitleDraft] = useState(title);
+  const titleInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { setTitleDraft(title); }, [title]);
+  useEffect(() => { if (editingTitle) titleInputRef.current?.select(); }, [editingTitle]);
+
+  function saveTitle() {
+    const trimmed = titleDraft.trim();
+    if (trimmed && onTitleChange) onTitleChange(trimmed);
+    setEditingTitle(false);
+  }
 
   function handleAdd() {
     if (!draft.trim()) return;
@@ -146,7 +161,35 @@ export function NotesList({ notes, onAdd, onDelete, onUpdate, onReorder }: Props
 
   return (
     <section className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-6">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Today's Notes</h2>
+      <div className="flex items-center gap-2 mb-4">
+        {editingTitle && onTitleChange ? (
+          <input
+            ref={titleInputRef}
+            className="text-xl font-semibold text-gray-800 bg-transparent border-b-2 border-blue-400 focus:outline-none flex-1"
+            value={titleDraft}
+            onChange={(e) => setTitleDraft(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') saveTitle(); if (e.key === 'Escape') setEditingTitle(false); }}
+            onBlur={saveTitle}
+          />
+        ) : (
+          <h2
+            className={`text-xl font-semibold text-gray-800 flex-1 ${onTitleChange ? 'cursor-text hover:text-blue-600' : ''}`}
+            onClick={() => onTitleChange && setEditingTitle(true)}
+            title={onTitleChange ? 'Click to rename' : undefined}
+          >
+            {title}
+          </h2>
+        )}
+        {onDeleteGroup && (
+          <button
+            onClick={onDeleteGroup}
+            className="text-gray-300 hover:text-red-500 transition-colors text-2xl leading-none px-1"
+            title="Delete this section"
+          >
+            ×
+          </button>
+        )}
+      </div>
 
       {modifying && (
         <div className="mb-3 px-3 py-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800 italic">

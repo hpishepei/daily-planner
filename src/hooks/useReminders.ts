@@ -22,7 +22,7 @@ export function useReminders() {
       timeOfDay,
       createdAt: Date.now(),
     };
-    setReminders((prev) => [...prev, reminder]);
+    setReminders((prev) => [reminder, ...prev]);
   }
 
   function deleteReminder(id: string): void {

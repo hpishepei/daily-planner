@@ -1,9 +1,10 @@
 import { useRef } from 'react';
 import { useNotes } from './hooks/useNotes';
 import { useReminders } from './hooks/useReminders';
+import { useNoteGroups } from './hooks/useNoteGroups';
 import { NotesList } from './components/notes/NotesList';
 import { RemindersList } from './components/reminders/RemindersList';
-import type { Note, Reminder } from './types';
+import type { Note, NoteGroup, Reminder } from './types';
 
 const FILE_PICKER_OPTS = {
   suggestedName: 'planner.json',
@@ -14,10 +15,11 @@ const FILE_PICKER_OPTS = {
 export default function App() {
   const { notes, addNote, deleteNote, updateNote, reorderNotes, replaceNotes } = useNotes();
   const { reminders, addReminder, deleteReminder, updateReminder, reorderReminders, replaceReminders } = useReminders();
+  const { groups, addGroup, deleteGroup, renameGroup, addNote: addGroupNote, deleteNote: deleteGroupNote, updateNote: updateGroupNote, reorderNotes: reorderGroupNotes, replaceGroups } = useNoteGroups();
   const importRef = useRef<HTMLInputElement>(null);
 
   async function handleExport() {
-    const data = JSON.stringify({ notes, reminders }, null, 2);
+    const data = JSON.stringify({ notes, reminders, groups }, null, 2);
     if ('showSaveFilePicker' in window) {
       try {
         const handle = await (window as any).showSaveFilePicker(FILE_PICKER_OPTS);
@@ -63,6 +65,7 @@ export default function App() {
         const parsed = JSON.parse(ev.target?.result as string);
         if (Array.isArray(parsed.notes)) replaceNotes(parsed.notes as Note[]);
         if (Array.isArray(parsed.reminders)) replaceReminders(parsed.reminders as Reminder[]);
+        if (Array.isArray(parsed.groups)) replaceGroups(parsed.groups as NoteGroup[]);
       } catch {
         alert('Invalid file — could not import data.');
       }
@@ -113,6 +116,27 @@ export default function App() {
             onUpdate={updateNote}
             onReorder={reorderNotes}
           />
+
+          {groups.map((group) => (
+            <NotesList
+              key={group.id}
+              title={group.title}
+              notes={group.notes}
+              onAdd={(text) => addGroupNote(group.id, text)}
+              onDelete={(noteId) => deleteGroupNote(group.id, noteId)}
+              onUpdate={(noteId, text) => updateGroupNote(group.id, noteId, text)}
+              onReorder={(from, to) => reorderGroupNotes(group.id, from, to)}
+              onTitleChange={(t) => renameGroup(group.id, t)}
+              onDeleteGroup={() => deleteGroup(group.id)}
+            />
+          ))}
+
+          <button
+            onClick={addGroup}
+            className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-sm text-gray-500 hover:border-blue-400 hover:text-blue-500 transition-colors font-medium"
+          >
+            + Add Custom Notes
+          </button>
         </div>
       </div>
     </div>
